@@ -16,15 +16,16 @@ ts() { date '+%Y-%m-%d %H:%M:%S'; }
 dl() {
     url="$1"; out="$2"; tmp="${out}.tmp"
     n=0
-    while [ "$n" -lt 3 ]; do
-        if wget -q -T 30 -O "$tmp" "$url" && [ -s "$tmp" ]; then
+    while [ "$n" -lt 5 ]; do
+        if wget -q -T 45 -O "$tmp" "$url" && [ -s "$tmp" ]; then
             mv "$tmp" "$out"
             chmod 644 "$out"
             echo "$(ts) OK    $(basename "$out") ($(wc -c < "$out") bytes)"
             return 0
         fi
         n=$((n + 1))
-        sleep 3
+        echo "$(ts) retry $n/5 $(basename "$out")"
+        sleep 10
     done
     rm -f "$tmp"
     echo "$(ts) ERROR $(basename "$out") <- $url"
