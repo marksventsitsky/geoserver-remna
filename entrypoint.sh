@@ -14,9 +14,10 @@ echo "[entrypoint] $(date '+%F %T') initial geo download..."
 /usr/local/bin/update-geo.sh >> /var/log/geo-update.log 2>&1 || \
     echo "[entrypoint] initial download failed — повтор по cron"
 
-# Ежедневно в 04:00
+# Ежедневно в 04:00. Каталог crontab задаём явно (-c), чтобы не зависеть от
+# наличия симлинка /var/spool/cron/crontabs -> /etc/crontabs в образе.
 mkdir -p /etc/crontabs
 echo "0 4 * * * /usr/local/bin/update-geo.sh >> /var/log/geo-update.log 2>&1" > /etc/crontabs/root
-crond -b -l 8
+crond -b -l 8 -c /etc/crontabs -L /var/log/cron.log
 
 wait "$NGINX_PID"
