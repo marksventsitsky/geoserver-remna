@@ -1,0 +1,28 @@
+services:
+  geo-serve:
+    image: nginx:alpine
+    container_name: geo-serve
+    hostname: geo-serve
+    restart: always
+    entrypoint: ["/bin/sh", "/entrypoint.sh"]
+    volumes:
+      - ./entrypoint.sh:/entrypoint.sh:ro
+      - ./update-geo.sh:/usr/local/bin/update-geo.sh:ro
+      - ./default.conf:/etc/nginx/conf.d/default.conf:ro
+      - geo-data:/usr/share/nginx/html
+    networks:
+      - remnawave-network
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+
+networks:
+  remnawave-network:
+    name: remnawave-network
+    external: true
+
+volumes:
+  geo-data:
+    name: geo-data
